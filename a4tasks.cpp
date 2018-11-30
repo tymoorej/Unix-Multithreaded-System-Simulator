@@ -91,8 +91,10 @@ void process_task_line(vector<string> split_line, int number_of_iterations){
         }
 
         struct Needed_Resource needed_resource = Needed_Resource(resource, needed);
-        task.needed_resources.push_back(needed_resource);
+        task.add_needed_resource(needed_resource);
     }
+
+    tasks.push_back(task);
 } 
 
 void process_input_file(string input_file_name, int number_of_iterations){
@@ -159,10 +161,6 @@ int main(int argc, char const *argv[]){
 
     start_time = get_current_time();
     process_input_file(input_file_name, number_of_iterations);
-
-    for (int i = 0; i < tasks.size(); i++){
-        
-    }
 
     return 0;
 }

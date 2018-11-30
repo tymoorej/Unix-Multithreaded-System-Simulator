@@ -36,6 +36,10 @@ void Task::print_after_iteration(){
 
 }
 
+void Task::add_needed_resource(struct Needed_Resource needed_resource){
+    this->needed_resources.push_back(needed_resource);
+}
+
 Needed_Resource::Needed_Resource(struct Resource *resource, int amount_needed){
     this->resource = resource;
     this->amount_needed = amount_needed;
@@ -49,6 +53,6 @@ Needed_Resource::Needed_Resource(){
 }
 
 void Needed_Resource::print(){
-    printf("%s: (MaxAvail= %d, held= %d)\n",
-    this->resource->name.c_str(), this->resource->max_available, this->amount_held);
+    printf("%s: (needed= %d, held= %d)\n",
+    this->resource->name.c_str(), this->amount_needed, this->amount_held);
 }
