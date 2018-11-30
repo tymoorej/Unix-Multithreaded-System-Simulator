@@ -82,7 +82,7 @@ void process_task_line(vector<string> split_line, int number_of_iterations){
         needed = atoi(resource_string.substr(pos_of_colon + 1, resource_string.size() - pos_of_colon).c_str());
 
         int found = 0;
-        struct Resource *resource = get_resource("resource_name", &found);
+        struct Resource *resource = get_resource(resource_name, &found);
 
         if (!found){
             printf("Error: Task %s wants to use resource %s. However, that resource is not defined.\n",
