@@ -5,7 +5,7 @@ clean:
 	rm -rf *.o -f; rm -rf .vscode -f
 
 tar:
-	tar -cvf submit.tar ./
+	tar -cvf submit.tar ./ --exclude .git
 
 end:
 	pkill -U $$USER
