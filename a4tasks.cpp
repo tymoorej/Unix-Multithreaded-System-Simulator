@@ -2,9 +2,11 @@
 #include "task.hpp"
 #include "resources.hpp"
 #include "shared.hpp"
+#include "monitor.hpp"
 
 vector<struct Resource> resources;
 vector<class Task> tasks;
+class Monitor monitor;
 long int start_time;
 
 // Convert the string input, into a vector of strings, split on spaces
@@ -140,6 +142,10 @@ void process_input_file(string input_file_name, int number_of_iterations){
 
 }
 
+void set_monitor(){
+    monitor = Monitor(tasks);
+}
+
 int main(int argc, char const *argv[]){
     if (argc != 4){
         cout << "Invalid number of arguments." << endl;
@@ -161,6 +167,7 @@ int main(int argc, char const *argv[]){
 
     start_time = get_current_time();
     process_input_file(input_file_name, number_of_iterations);
+    set_monitor();
 
     return 0;
 }
