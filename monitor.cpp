@@ -4,10 +4,19 @@
 #include "task.hpp"
 
 
-Monitor::Monitor(vector<class Task> tasks){
-    for (int i = 0; i < tasks.size(); i++){
-        this->tasks.push_back(&tasks[i]);
-    }
+Monitor::Monitor(){}
+void Monitor::add_task(class Task* task){
+    this->tasks.push_back(task);
 }
 
-Monitor::Monitor(){}
+void Monitor::print(){
+    printf("monitor: [WAIT] ");
+    for (int i = 0; i < this->tasks.size(); i++){
+        class Task task = *tasks[i];
+
+        if (task.state == WAIT){
+            printf("%s ", task.name.c_str());
+        }
+    }
+    printf("\n");
+}

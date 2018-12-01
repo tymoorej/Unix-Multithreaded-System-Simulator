@@ -16,6 +16,7 @@ struct Needed_Resource{
 };
 
 class Task{
+    public:
     enum State state;
     string name;
     int busy_time;
@@ -26,7 +27,6 @@ class Task{
     pthread_t tid;
     vector<struct Needed_Resource> needed_resources;
 
-    public:
     Task(string name, int busy_time, int idle_time, int total_number_of_iterations);
     void add_needed_resource(struct Needed_Resource needed_resource);
     void print_final();

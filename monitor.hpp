@@ -8,8 +8,10 @@ class Monitor{
     vector<class Task*> tasks;
 
     public:
-    Monitor(vector<class Task> tasks);
     Monitor();
+    void add_task(class Task* task);
+    void print();
+
 };
 
 #endif

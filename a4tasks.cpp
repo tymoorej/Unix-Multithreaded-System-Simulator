@@ -142,8 +142,11 @@ void process_input_file(string input_file_name, int number_of_iterations){
 
 }
 
-void set_monitor(){
-    monitor = Monitor(tasks);
+void set_monitor(){ 
+    for (int i = 0; i < tasks.size(); i++){
+        class Task *task = &tasks[i];
+        monitor.add_task(task);
+    }
 }
 
 int main(int argc, char const *argv[]){
@@ -164,10 +167,10 @@ int main(int argc, char const *argv[]){
         cout << "Incorrect Number of Iterations Specified." << endl;
         exit(0);
     }
-
+    
     start_time = get_current_time();
     process_input_file(input_file_name, number_of_iterations);
     set_monitor();
-
+    monitor.print();
     return 0;
 }
