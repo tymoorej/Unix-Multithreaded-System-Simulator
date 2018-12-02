@@ -6,6 +6,16 @@
 enum State {WAIT, RUN, IDLE};
 
 extern long int start_time;
+extern struct Mutexes mutexes;
+
+struct Mutexes{
+    pthread_mutex_t  state_change_mutex;
+
+    void initialize_mutexes();
+    void initalize_mutex(pthread_mutex_t* mutex);
+    void lock_mutex(pthread_mutex_t* mutex);
+    void unlock_mutex(pthread_mutex_t* mutex);
+};
 
 long int get_current_time();
 

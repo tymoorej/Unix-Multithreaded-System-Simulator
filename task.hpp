@@ -31,6 +31,8 @@ class Task{
     void add_needed_resource(struct Needed_Resource needed_resource);
     void print_final();
     void print_after_iteration();
+    void execute();
+    static void *dummy_print(void *arg);
 };
 
 #endif

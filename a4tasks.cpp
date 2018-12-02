@@ -8,6 +8,7 @@ vector<struct Resource> resources;
 vector<class Task> tasks;
 class Monitor monitor;
 long int start_time;
+struct Mutexes mutexes;
 
 // Convert the string input, into a vector of strings, split on spaces
 void get_vector_input(vector<string> *split_input, string input){
@@ -142,12 +143,15 @@ void process_input_file(string input_file_name, int number_of_iterations){
 
 }
 
-void set_monitor(){ 
+void set_monitor(int monitor_time){
+    monitor.set_monitor_time(monitor_time);
+
     for (int i = 0; i < tasks.size(); i++){
         class Task *task = &tasks[i];
         monitor.add_task(task);
     }
 }
+
 
 int main(int argc, char const *argv[]){
     if (argc != 4){
@@ -170,7 +174,12 @@ int main(int argc, char const *argv[]){
     
     start_time = get_current_time();
     process_input_file(input_file_name, number_of_iterations);
-    set_monitor();
-    monitor.print();
+    set_monitor(monitor_time);
+    mutexes.initialize_mutexes();
+    // tasks[0].execute();
+    monitor.execute();
+    while(1){
+
+    }
     return 0;
 }

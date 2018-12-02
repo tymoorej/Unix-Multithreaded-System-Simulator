@@ -6,12 +6,15 @@
 
 class Monitor{
     vector<class Task*> tasks;
+    pthread_t tid;
+    int monitor_time;
 
     public:
-    Monitor();
+    void set_monitor_time(int monitor_time);
     void add_task(class Task* task);
-    void print();
-
+    static void *print(void *arg);
+    void print_state(enum State state);
+    void execute();
 };
 
 #endif

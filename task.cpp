@@ -3,8 +3,6 @@
 #include "shared.hpp"
 #include "resources.hpp"
 
-
-
 Task::Task(string name, int busy_time, int idle_time, int total_number_of_iterations){
     this->state = WAIT;
     this->name = name;
@@ -14,6 +12,23 @@ Task::Task(string name, int busy_time, int idle_time, int total_number_of_iterat
     this->total_number_of_iterations = total_number_of_iterations;
     this->iterations_completed = 0;
     this->tid = -1;
+}
+
+void Task::execute(){
+    int rval = pthread_create(&this->tid, NULL, this->dummy_print, this);
+    if (rval) {
+          perror("pthread_create failed");
+          exit(1);
+    }
+}
+
+void *Task::dummy_print(void *arg){
+    class Task *task = (Task *) arg;
+    task->name = "new";
+    while(1){
+        cout << task->tid << endl;
+        sleep(1);
+    }
 }
 
 void Task::print_final(){
