@@ -27,11 +27,11 @@ void Monitor::print_state(enum State state){
 void *Monitor::print(void *arg){
     class Monitor *monitor = (Monitor *) arg;
     while(1){
-        mutexes.lock_mutex(&mutexes.state_change_mutex);
+        mutexes.lock_mutex(&mutexes.printing_mutex);
         monitor->print_state(WAIT);
         monitor->print_state(RUN);
         monitor->print_state(IDLE);
-        mutexes.unlock_mutex(&mutexes.state_change_mutex);
+        mutexes.unlock_mutex(&mutexes.printing_mutex);
         usleep(monitor->monitor_time * 1000);
     }
 }

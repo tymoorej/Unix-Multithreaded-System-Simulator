@@ -22,7 +22,7 @@ string state_to_string(enum State s){
 }
 
 void Mutexes::initialize_mutexes(){
-    this->initalize_mutex(&this->state_change_mutex);
+    this->initalize_mutex(&this->printing_mutex);
 }
 
 void Mutexes::initalize_mutex(pthread_mutex_t* mutex){

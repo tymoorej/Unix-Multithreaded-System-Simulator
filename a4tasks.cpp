@@ -152,6 +152,35 @@ void set_monitor(int monitor_time){
     }
 }
 
+void create_threads(){
+    monitor.execute();
+    for (int i = 0; i < tasks.size(); i++){
+        tasks[i].execute();
+    }
+}
+
+bool is_finished(){
+    for (int i = 0; i < tasks.size(); i++){
+        if (tasks[i].iterations_completed != tasks[i].total_number_of_iterations){
+            return false;
+        }
+    }
+    return true;
+}
+
+void termination_printing(){
+    cout << "System Resources:" << endl;
+    for (int i = 0; i < resources.size(); i++){
+        printf("\t");
+        resources[i].print();
+    }
+    cout << "\nSystem Tasks:" << endl;
+    for (int i = 0; i < tasks.size(); i++){
+        printf("[%d]\t", i);
+        tasks[i].print_final();
+    }
+    printf("Running time= %d msec\n", (int) (get_current_time() - start_time));
+}
 
 int main(int argc, char const *argv[]){
     if (argc != 4){
@@ -173,13 +202,22 @@ int main(int argc, char const *argv[]){
     }
     
     start_time = get_current_time();
-    process_input_file(input_file_name, number_of_iterations);
-    set_monitor(monitor_time);
-    mutexes.initialize_mutexes();
-    // tasks[0].execute();
-    monitor.execute();
-    while(1){
 
+    process_input_file(input_file_name, number_of_iterations);
+
+    set_monitor(monitor_time);
+
+    mutexes.initialize_mutexes();
+
+    create_threads();
+
+    while(1){
+        if (is_finished()){
+            break;
+        }
     }
+
+    termination_printing();
+
     return 0;
 }

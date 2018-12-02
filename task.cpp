@@ -15,19 +15,89 @@ Task::Task(string name, int busy_time, int idle_time, int total_number_of_iterat
 }
 
 void Task::execute(){
-    int rval = pthread_create(&this->tid, NULL, this->dummy_print, this);
+    int rval = pthread_create(&this->tid, NULL, this->task_handler, this);
     if (rval) {
           perror("pthread_create failed");
           exit(1);
     }
 }
 
-void *Task::dummy_print(void *arg){
+bool Task::can_aquire_resources_needed(){
+    for (int i = 0; i < needed_resources.size(); i++){
+        struct Needed_Resource *needed_resource = &needed_resources[i];
+        struct Resource *resource = needed_resource->resource;
+        if (resource->currently_available < needed_resource->amount_needed){
+            return false;
+        }
+    }
+    return true;
+}
+
+void Task::aquire_resources_needed(){
+    for (int i = 0; i < needed_resources.size(); i++){
+        struct Needed_Resource *needed_resource = &needed_resources[i];
+        struct Resource *resource = needed_resource->resource;
+        if (resource->currently_available < needed_resource->amount_needed){
+            cout << "Error: Resource vanished unexpectidley" << endl;
+        }
+        needed_resource->amount_held += needed_resource->amount_needed;
+        resource->currently_available -= needed_resource->amount_needed;
+    }
+}
+
+void Task::release_resources(){
+    for (int i = 0; i < needed_resources.size(); i++){
+        struct Needed_Resource *needed_resource = &needed_resources[i];
+        struct Resource *resource = needed_resource->resource;
+        resource->currently_available += needed_resource->amount_held;
+        needed_resource->amount_held = 0;
+    }
+}
+
+void Task::run(){
+    usleep(this->busy_time * 1000);
+
+    mutexes.lock_mutex(&mutexes.resources_mutex);
+    this->release_resources();
+    mutexes.unlock_mutex(&mutexes.resources_mutex);
+
+    mutexes.lock_mutex(&mutexes.printing_mutex);
+    this->print_after_iteration();
+    this->state = IDLE;
+    mutexes.unlock_mutex(&mutexes.printing_mutex);
+}
+
+void *Task::task_handler(void *arg){
     class Task *task = (Task *) arg;
-    task->name = "new";
     while(1){
-        cout << task->tid << endl;
-        sleep(1);
+        mutexes.lock_mutex(&mutexes.resources_mutex);
+        if (!task->can_aquire_resources_needed()){
+            mutexes.unlock_mutex(&mutexes.resources_mutex);
+
+            mutexes.lock_mutex(&mutexes.printing_mutex);
+            task->state = WAIT;
+            mutexes.unlock_mutex(&mutexes.printing_mutex);
+            task->wait_time += 10;
+            usleep(10 * 1000); // 10ms
+            continue;
+        }
+        
+        task->aquire_resources_needed();
+        mutexes.unlock_mutex(&mutexes.resources_mutex);
+
+        mutexes.lock_mutex(&mutexes.printing_mutex);
+        task->state = RUN;
+        mutexes.unlock_mutex(&mutexes.printing_mutex);
+
+        task->run();
+
+        usleep(task->idle_time * 1000);
+        task->iterations_completed++;
+
+        if (task->iterations_completed >= task->total_number_of_iterations){
+            void * value_pointer;
+            pthread_exit(value_pointer);
+        }
     }
 }
 

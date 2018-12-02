@@ -32,7 +32,11 @@ class Task{
     void print_final();
     void print_after_iteration();
     void execute();
-    static void *dummy_print(void *arg);
+    static void *task_handler(void *arg);
+    bool can_aquire_resources_needed();
+    void aquire_resources_needed();
+    void release_resources();
+    void run();
 };
 
 #endif

@@ -9,7 +9,8 @@ extern long int start_time;
 extern struct Mutexes mutexes;
 
 struct Mutexes{
-    pthread_mutex_t  state_change_mutex;
+    pthread_mutex_t  printing_mutex;
+    pthread_mutex_t  resources_mutex;
 
     void initialize_mutexes();
     void initalize_mutex(pthread_mutex_t* mutex);
