@@ -211,11 +211,7 @@ int main(int argc, char const *argv[]){
 
     create_threads();
 
-    while(1){
-        if (is_finished()){
-            break;
-        }
-    }
+    while(!is_finished()){}
 
     termination_printing();
 
