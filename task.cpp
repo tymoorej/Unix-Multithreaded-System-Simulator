@@ -63,7 +63,6 @@ void Task::run(){
     mutexes.unlock_mutex(&mutexes.resources_mutex);
 
     mutexes.lock_mutex(&mutexes.printing_mutex);
-    this->print_after_iteration();
     this->state = IDLE;
     mutexes.unlock_mutex(&mutexes.printing_mutex);
 }
@@ -94,6 +93,10 @@ void *Task::task_handler(void *arg){
 
         usleep(task->idle_time * 1000);
         task->iterations_completed++;
+
+        mutexes.lock_mutex(&mutexes.printing_mutex);
+        task->print_after_iteration();
+        mutexes.unlock_mutex(&mutexes.printing_mutex);
 
         if (task->iterations_completed >= task->total_number_of_iterations){
             void * value_pointer;
