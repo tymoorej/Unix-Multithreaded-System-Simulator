@@ -1,4 +1,3 @@
-# An instance of the Dining Philosophers Problem with 5 people
 # ./a4tasks t1.dat 75 20
 
 resources  A:2 B:2 C:2 D:2

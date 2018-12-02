@@ -39,6 +39,7 @@ void Task::aquire_resources_needed(){
         struct Resource *resource = needed_resource->resource;
         if (resource->currently_available < needed_resource->amount_needed){
             cout << "Error: Resource vanished unexpectidley" << endl;
+            exit(0);
         }
         needed_resource->amount_held += needed_resource->amount_needed;
         resource->currently_available -= needed_resource->amount_needed;
