@@ -169,6 +169,7 @@ bool is_finished(){
 }
 
 void termination_printing(){
+    mutexes.lock_mutex(&mutexes.printing_mutex);
     cout << "System Resources:" << endl;
     for (int i = 0; i < resources.size(); i++){
         printf("\t");
@@ -180,6 +181,7 @@ void termination_printing(){
         tasks[i].print_final();
     }
     printf("Running time= %d msec\n", (int) (get_current_time() - start_time));
+    mutexes.unlock_mutex(&mutexes.printing_mutex);
 }
 
 int main(int argc, char const *argv[]){
