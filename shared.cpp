@@ -1,6 +1,10 @@
+// the shared.cpp file, this file handles contains shared methods
+// used throughout the program, also defines the mutex struct
+// which holds all mutexes
 #include "includes.hpp"
 #include "shared.hpp"
 
+// get the current time in milliseconds
 long int get_current_time(){
     struct timeval t;
     gettimeofday(&t, NULL);
@@ -8,6 +12,7 @@ long int get_current_time(){
     return milli;
 }
 
+// converts the state of a task to a string
 string state_to_string(enum State s){
     if (s == WAIT){
         return "WAIT";
@@ -21,10 +26,15 @@ string state_to_string(enum State s){
     return "";
 }
 
+// Initializes all mutexes
 void Mutexes::initialize_mutexes(){
     this->initalize_mutex(&this->printing_mutex);
+    this->initalize_mutex(&this->resources_mutex);    
 }
 
+// ***the next 3 methods were influenced by resources on eclass***
+
+// Initialize a mutex and perform error checking
 void Mutexes::initalize_mutex(pthread_mutex_t* mutex){
     int rval = pthread_mutex_init(mutex, NULL);
     if (rval){
@@ -33,6 +43,7 @@ void Mutexes::initalize_mutex(pthread_mutex_t* mutex){
     }
 }
 
+// lock a mutex and perform error checking
 void Mutexes::lock_mutex(pthread_mutex_t* mutex){
     int rval = pthread_mutex_lock(mutex);
     if (rval){
@@ -41,6 +52,7 @@ void Mutexes::lock_mutex(pthread_mutex_t* mutex){
     }
 }    
 
+// unlock a mutex and perform error checking
 void Mutexes::unlock_mutex(pthread_mutex_t* mutex){
     int rval = pthread_mutex_unlock(mutex);
     if (rval){

@@ -1,3 +1,6 @@
+// a4tasks.cpp is the main file, it is what handles the user input,
+// reading from the file, and managing all threads
+
 #include "includes.hpp"
 #include "task.hpp"
 #include "resources.hpp"
@@ -19,6 +22,8 @@ void get_vector_input(vector<string> *split_input, string input){
     }
 }
 
+// Process the resource line, instantiates an instance of the resource struct
+// for each resource and provides it all the information stored in the file
 void process_resource_line(vector<string> split_line){
     if (split_line.size() < 2){
         cout << "Error: Resource line is empty" << endl;
@@ -26,7 +31,7 @@ void process_resource_line(vector<string> split_line){
     }
 
     string resource;
-    int pos_of_colon;
+    int pos_of_colon; // used to split the resource name from the max available
     string resource_name;
     int max_available;
     for (int i = 1; i < split_line.size(); i++){
@@ -35,16 +40,21 @@ void process_resource_line(vector<string> split_line){
         resource_name = resource.substr(0, pos_of_colon);
         max_available = atoi(resource.substr(pos_of_colon + 1, resource.size() - pos_of_colon).c_str());
 
+        // a resource must have atleast 1 max available
         if (max_available <= 0){
             printf("Error: Resource %s has an invalid maximum available value\n", resource_name.c_str());
             exit(0);
         }
 
+        // create resource and add it resources vector
         struct Resource r = Resource(resource_name, max_available);
         resources.push_back(r);
     }
 }
 
+// given a resource name return a pointer to the resource
+// also takes in a pointer to an int which is set to 1 if 
+// the resource is found or is unchanged if not found
 struct Resource* get_resource(string resource_name, int * found){
     struct Resource *resource;
     for (int i = 0; i < resources.size(); i++){
@@ -57,6 +67,10 @@ struct Resource* get_resource(string resource_name, int * found){
     return resource;
 }
 
+// process a task line from the input file
+// performs error checking to ensure the task line
+// is valid. Instantiates an instance of the task
+// class for each task and provides it all the information stored on the line
 void process_task_line(vector<string> split_line, int number_of_iterations){
     if (split_line.size() < 4){
         cout << "Error: Task line is incorrect" << endl;
@@ -72,12 +86,14 @@ void process_task_line(vector<string> split_line, int number_of_iterations){
         exit(0);
     }
 
+    // Instantiate an instance of the Task class
     class Task task = Task(task_name, busy_time, idle_time, number_of_iterations);
     string resource_string;
-    int pos_of_colon;
+    int pos_of_colon; // used to split the resource name from the max available
     string resource_name;
     int needed;
 
+    // for each resourse, add it to the task's needed resources
     for (int i = 4; i < split_line.size(); i++){
         resource_string = split_line[i];
         pos_of_colon = resource_string.find(':');
@@ -97,9 +113,12 @@ void process_task_line(vector<string> split_line, int number_of_iterations){
         task.add_needed_resource(needed_resource);
     }
 
+    // add the task to the tasks vector
     tasks.push_back(task);
 } 
 
+// Processes the input file, skip over comments and empty lines
+// also detects errors
 void process_input_file(string input_file_name, int number_of_iterations){
     string line;
     vector<string> split_line;
@@ -143,6 +162,8 @@ void process_input_file(string input_file_name, int number_of_iterations){
 
 }
 
+// set the monitors monitor time, and provide it
+// valid pointers to all of the tasks.
 void set_monitor(int monitor_time){
     monitor.set_monitor_time(monitor_time);
 
@@ -152,6 +173,9 @@ void set_monitor(int monitor_time){
     }
 }
 
+// execute all of the threads,
+// this includes the monitor thread
+// and all of the task threads
 void create_threads(){
     monitor.execute();
     for (int i = 0; i < tasks.size(); i++){
@@ -159,8 +183,10 @@ void create_threads(){
     }
 }
 
+// determines if all of the tasks have ran to completion
 bool is_finished(){
     for (int i = 0; i < tasks.size(); i++){
+        // a task is completed if it has completed all of its iterations
         if (tasks[i].iterations_completed != tasks[i].total_number_of_iterations){
             return false;
         }
@@ -168,9 +194,11 @@ bool is_finished(){
     return true;
 }
 
+// Prints all of the information about the resources
+// and tasks. Is ran as the final portion of the program
 void termination_printing(){
-    mutexes.lock_mutex(&mutexes.printing_mutex);
-    cout << "System Resources:" << endl;
+    mutexes.lock_mutex(&mutexes.printing_mutex); // last time we need to print, we do not unlock this mutex
+    cout << "\nSystem Resources:" << endl;
     for (int i = 0; i < resources.size(); i++){
         printf("\t");
         resources[i].print();
@@ -181,9 +209,13 @@ void termination_printing(){
         tasks[i].print_final();
     }
     printf("Running time= %d msec\n", (int) (get_current_time() - start_time));
-    mutexes.unlock_mutex(&mutexes.printing_mutex);
 }
 
+// the main function, handles error checking for user input
+// then proceeds to get the starting time, processes the
+// input file, sets the monitor, initializes the mutexes,
+// and creates the threads. Once completed does all 
+// nessesary termination printing
 int main(int argc, char const *argv[]){
     if (argc != 4){
         cout << "Invalid number of arguments." << endl;
@@ -193,12 +225,12 @@ int main(int argc, char const *argv[]){
     int monitor_time = atoi(argv[2]);
     int number_of_iterations = atoi(argv[3]);
     
-    if (monitor_time < 0){
+    if (monitor_time <= 0){
         cout << "Incorrect Monitor Time Specified." << endl;
         exit(0);
     }
 
-    if (number_of_iterations < 0){
+    if (number_of_iterations <= 0){
         cout << "Incorrect Number of Iterations Specified." << endl;
         exit(0);
     }
