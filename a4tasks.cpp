@@ -133,6 +133,11 @@ void process_input_file(string input_file_name, int number_of_iterations){
     int error_checker = -1;
     int line_no = 0;
     while(getline(input_file, line)) {
+
+        if (line == ""){
+            continue;
+        }
+
         if (line.at(0) == '#'){
             line_no++;
             continue;
@@ -241,7 +246,6 @@ int main(int argc, char const *argv[]){
     }
     
     start_time = get_current_time();
-
     process_input_file(input_file_name, number_of_iterations);
 
     set_monitor(monitor_time);
